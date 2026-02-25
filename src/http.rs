@@ -20,10 +20,7 @@ impl HttpClient {
                     reqwest::header::AUTHORIZATION,
                     format!("Bearer {}", token).parse().unwrap(),
                 );
-                headers.insert(
-                    reqwest::header::ACCEPT,
-                    "application/json".parse().unwrap(),
-                );
+                headers.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
                 headers
             })
             .build()
@@ -37,25 +34,52 @@ impl HttpClient {
 
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T> {
         let url = format!("{}/{}", self.base_url, path);
-        let response = self.client.get(&url).send().await.map_err(BayarcashError::Http)?;
+        let response = self
+            .client
+            .get(&url)
+            .send()
+            .await
+            .map_err(BayarcashError::Http)?;
         self.handle_response(response).await
     }
 
     pub async fn post<T: DeserializeOwned, B: Serialize>(&self, path: &str, body: &B) -> Result<T> {
         let url = format!("{}/{}", self.base_url, path);
-        let response = self.client.post(&url).form(body).send().await.map_err(BayarcashError::Http)?;
+        let response = self
+            .client
+            .post(&url)
+            .form(body)
+            .send()
+            .await
+            .map_err(BayarcashError::Http)?;
         self.handle_response(response).await
     }
 
     pub async fn put<T: DeserializeOwned, B: Serialize>(&self, path: &str, body: &B) -> Result<T> {
         let url = format!("{}/{}", self.base_url, path);
-        let response = self.client.put(&url).form(body).send().await.map_err(BayarcashError::Http)?;
+        let response = self
+            .client
+            .put(&url)
+            .form(body)
+            .send()
+            .await
+            .map_err(BayarcashError::Http)?;
         self.handle_response(response).await
     }
 
-    pub async fn delete<T: DeserializeOwned, B: Serialize>(&self, path: &str, body: &B) -> Result<T> {
+    pub async fn delete<T: DeserializeOwned, B: Serialize>(
+        &self,
+        path: &str,
+        body: &B,
+    ) -> Result<T> {
         let url = format!("{}/{}", self.base_url, path);
-        let response = self.client.delete(&url).form(body).send().await.map_err(BayarcashError::Http)?;
+        let response = self
+            .client
+            .delete(&url)
+            .form(body)
+            .send()
+            .await
+            .map_err(BayarcashError::Http)?;
         self.handle_response(response).await
     }
 
@@ -64,7 +88,13 @@ impl HttpClient {
         url: &str,
         form: reqwest::multipart::Form,
     ) -> Result<T> {
-        let response = self.client.post(url).multipart(form).send().await.map_err(BayarcashError::Http)?;
+        let response = self
+            .client
+            .post(url)
+            .multipart(form)
+            .send()
+            .await
+            .map_err(BayarcashError::Http)?;
         self.handle_response(response).await
     }
 
@@ -74,7 +104,13 @@ impl HttpClient {
         url: &str,
         body: &B,
     ) -> Result<T> {
-        let response = self.client.post(url).form(body).send().await.map_err(BayarcashError::Http)?;
+        let response = self
+            .client
+            .post(url)
+            .form(body)
+            .send()
+            .await
+            .map_err(BayarcashError::Http)?;
         self.handle_response(response).await
     }
 
@@ -91,7 +127,11 @@ impl HttpClient {
             422 => {
                 let errors = serde_json::from_str::<serde_json::Value>(&body)
                     .ok()
-                    .and_then(|v| v.get("errors").and_then(|e| serde_json::from_value::<HashMap<String, Vec<String>>>(e.clone()).ok()))
+                    .and_then(|v| {
+                        v.get("errors").and_then(|e| {
+                            serde_json::from_value::<HashMap<String, Vec<String>>>(e.clone()).ok()
+                        })
+                    })
                     .unwrap_or_default();
 
                 let message = serde_json::from_str::<serde_json::Value>(&body)
@@ -104,13 +144,21 @@ impl HttpClient {
             404 => Err(BayarcashError::NotFound),
             400 => {
                 let parsed = serde_json::from_str::<serde_json::Value>(&body).ok();
-                let message = parsed.as_ref()
+                let message = parsed
+                    .as_ref()
                     .and_then(|v| v.get("message").and_then(|m| m.as_str().map(String::from)))
                     .unwrap_or_else(|| "Action failed".to_string());
-                Err(BayarcashError::FailedAction { message, details: parsed })
+                Err(BayarcashError::FailedAction {
+                    message,
+                    details: parsed,
+                })
             }
             429 => Err(BayarcashError::RateLimitExceeded { reset_at: None }),
-            _ => Err(BayarcashError::Other(format!("HTTP {} - {}", status.as_u16(), body.chars().take(200).collect::<String>()))),
+            _ => Err(BayarcashError::Other(format!(
+                "HTTP {} - {}",
+                status.as_u16(),
+                body.chars().take(200).collect::<String>()
+            ))),
         }
     }
 }

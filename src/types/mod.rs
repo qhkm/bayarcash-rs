@@ -1,15 +1,15 @@
-mod payment;
-mod transaction;
 mod bank;
-mod portal;
-mod direct_debit;
 mod callback;
+mod direct_debit;
 mod manual_transfer;
+mod payment;
+mod portal;
+mod transaction;
 
-pub use payment::*;
-pub use transaction::*;
 pub use bank::*;
-pub use portal::*;
-pub use direct_debit::*;
 pub use callback::*;
+pub use direct_debit::*;
 pub use manual_transfer::*;
+pub use payment::*;
+pub use portal::*;
+pub use transaction::*;

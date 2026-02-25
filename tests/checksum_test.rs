@@ -18,10 +18,20 @@ fn test_payment_intent_checksum_is_64_hex_chars() {
 #[test]
 fn test_payment_intent_checksum_is_deterministic() {
     let c1 = checksum::payment_intent(
-        "test_secret_key_12345", 1, "ORDER123", 100.5, "John Doe", "john@example.com",
+        "test_secret_key_12345",
+        1,
+        "ORDER123",
+        100.5,
+        "John Doe",
+        "john@example.com",
     );
     let c2 = checksum::payment_intent(
-        "test_secret_key_12345", 1, "ORDER123", 100.5, "John Doe", "john@example.com",
+        "test_secret_key_12345",
+        1,
+        "ORDER123",
+        100.5,
+        "John Doe",
+        "john@example.com",
     );
     assert_eq!(c1, c2);
 }
@@ -29,10 +39,20 @@ fn test_payment_intent_checksum_is_deterministic() {
 #[test]
 fn test_payment_intent_checksum_differs_for_different_data() {
     let c1 = checksum::payment_intent(
-        "test_secret_key_12345", 1, "ORDER123", 100.5, "John Doe", "john@example.com",
+        "test_secret_key_12345",
+        1,
+        "ORDER123",
+        100.5,
+        "John Doe",
+        "john@example.com",
     );
     let c2 = checksum::payment_intent(
-        "test_secret_key_12345", 1, "ORDER456", 100.5, "John Doe", "john@example.com",
+        "test_secret_key_12345",
+        1,
+        "ORDER456",
+        100.5,
+        "John Doe",
+        "john@example.com",
     );
     assert_ne!(c1, c2);
 }
@@ -41,9 +61,15 @@ fn test_payment_intent_checksum_differs_for_different_data() {
 fn test_fpx_dd_enrollment_checksum_is_64_hex_chars() {
     let checksum = checksum::fpx_direct_debit_enrollment(
         "test_secret_key_12345",
-        "DD-ORDER-001", 50.0, "Jane Doe", "jane@example.com",
-        "+60123456789", "NRIC", "920101015678",
-        "Monthly subscription", "MONTHLY",
+        "DD-ORDER-001",
+        50.0,
+        "Jane Doe",
+        "jane@example.com",
+        "+60123456789",
+        "NRIC",
+        "920101015678",
+        "Monthly subscription",
+        "MONTHLY",
     );
     assert_eq!(checksum.len(), 64);
     assert!(checksum.chars().all(|c| c.is_ascii_hexdigit()));
@@ -53,8 +79,11 @@ fn test_fpx_dd_enrollment_checksum_is_64_hex_chars() {
 fn test_fpx_dd_maintenance_checksum_is_64_hex_chars() {
     let checksum = checksum::fpx_direct_debit_maintenance(
         "test_secret_key_12345",
-        75.0, "jane@example.com", "+60123456789",
-        "Update subscription amount", "MONTHLY",
+        75.0,
+        "jane@example.com",
+        "+60123456789",
+        "Update subscription amount",
+        "MONTHLY",
     );
     assert_eq!(checksum.len(), 64);
     assert!(checksum.chars().all(|c| c.is_ascii_hexdigit()));

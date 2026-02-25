@@ -10,7 +10,10 @@ fn test_verify_transaction_callback_valid() {
     fields.insert("amount".to_string(), "100.50".to_string());
     fields.insert("currency".to_string(), "MYR".to_string());
     fields.insert("datetime".to_string(), "2025-01-15 10:30:00".to_string());
-    fields.insert("exchange_reference_number".to_string(), "REF123".to_string());
+    fields.insert(
+        "exchange_reference_number".to_string(),
+        "REF123".to_string(),
+    );
     fields.insert("exchange_transaction_id".to_string(), "EXT123".to_string());
     fields.insert("order_number".to_string(), "ORDER123".to_string());
     fields.insert("payer_bank_name".to_string(), "Maybank".to_string());
@@ -59,14 +62,20 @@ fn test_verify_transaction_callback_invalid() {
         datetime: "2025-01-15 10:30:00".into(),
         checksum: "invalid_checksum_here".into(),
     };
-    assert!(!verification::verify_transaction(&data, "test_secret_key_12345"));
+    assert!(!verification::verify_transaction(
+        &data,
+        "test_secret_key_12345"
+    ));
 }
 
 #[test]
 fn test_verify_pre_transaction_callback_valid() {
     let secret = "test_secret_key_12345";
     let mut fields = BTreeMap::new();
-    fields.insert("exchange_reference_number".to_string(), "REF123".to_string());
+    fields.insert(
+        "exchange_reference_number".to_string(),
+        "REF123".to_string(),
+    );
     fields.insert("order_number".to_string(), "ORDER123".to_string());
     fields.insert("record_type".to_string(), "pre_transaction".to_string());
     let valid_checksum = checksum::create_checksum_value(secret, &fields);
@@ -86,7 +95,10 @@ fn test_verify_return_url_callback_valid() {
     let mut fields = BTreeMap::new();
     fields.insert("amount".to_string(), "100.50".to_string());
     fields.insert("currency".to_string(), "MYR".to_string());
-    fields.insert("exchange_reference_number".to_string(), "REF123".to_string());
+    fields.insert(
+        "exchange_reference_number".to_string(),
+        "REF123".to_string(),
+    );
     fields.insert("exchange_transaction_id".to_string(), "EXT123".to_string());
     fields.insert("order_number".to_string(), "ORDER123".to_string());
     fields.insert("payer_bank_name".to_string(), "Maybank".to_string());
