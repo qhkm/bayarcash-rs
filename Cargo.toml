@@ -1,5 +1,5 @@
 [package]
-name = "bayarcash-sdk"
+name = "bayarcash-rs"
 version = "0.2.0"
 edition = "2021"
 description = "Rust SDK for Bayarcash Payment Gateway API"
@@ -9,6 +9,9 @@ homepage = "https://github.com/qhkm/bayarcash-rs"
 keywords = ["bayarcash", "payment", "fpx", "duitnow", "malaysia"]
 categories = ["api-bindings", "web-programming"]
 readme = "README.md"
+
+[lib]
+name = "bayarcash"
 
 [dependencies]
 reqwest = { version = "0.12", features = ["json", "multipart"] }

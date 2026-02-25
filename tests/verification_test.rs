@@ -1,6 +1,6 @@
-use bayarcash_sdk::checksum;
-use bayarcash_sdk::types::*;
-use bayarcash_sdk::verification;
+use bayarcash::checksum;
+use bayarcash::types::*;
+use bayarcash::verification;
 use std::collections::BTreeMap;
 
 #[test]

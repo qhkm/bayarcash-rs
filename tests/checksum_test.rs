@@ -1,4 +1,4 @@
-use bayarcash_sdk::checksum;
+use bayarcash::checksum;
 use std::collections::BTreeMap;
 
 #[test]

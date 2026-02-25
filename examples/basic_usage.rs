@@ -1,4 +1,4 @@
-use bayarcash_sdk::{ApiVersion, Bayarcash, PaymentChannel, PaymentIntentRequest};
+use bayarcash::{ApiVersion, Bayarcash, PaymentChannel, PaymentIntentRequest};
 use std::time::Duration;
 
 #[tokio::main]
@@ -36,7 +36,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     }
 
     // Generate a checksum
-    let checksum = bayarcash_sdk::checksum::payment_intent(
+    let checksum = bayarcash::checksum::payment_intent(
         "your_secret_key",
         PaymentChannel::Fpx as u8,
         "ORDER-001",

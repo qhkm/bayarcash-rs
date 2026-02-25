@@ -1,4 +1,4 @@
-use bayarcash_sdk::{ApiVersion, Bayarcash, BayarcashError, PaymentChannel, PaymentIntentRequest};
+use bayarcash::{ApiVersion, Bayarcash, BayarcashError, PaymentChannel, PaymentIntentRequest};
 use serde_json::json;
 
 #[tokio::test]

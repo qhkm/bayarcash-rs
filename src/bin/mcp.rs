@@ -1,4 +1,4 @@
-use bayarcash_sdk::{AppConfig, PaymentIntentRequest, TransactionQueryParams};
+use bayarcash::{AppConfig, PaymentIntentRequest, TransactionQueryParams};
 use rmcp::{
     model::{Implementation, ServerCapabilities, ServerInfo},
     tool, ServerHandler, ServiceExt,
@@ -248,7 +248,7 @@ impl BayarcashMcp {
     /// Generate payment intent checksum
     #[tool(description = "Generate an HMAC-SHA256 checksum for a payment intent request.")]
     async fn generate_checksum(&self, #[tool(aggr)] params: ChecksumPaymentParams) -> String {
-        let checksum = bayarcash_sdk::checksum::payment_intent(
+        let checksum = bayarcash::checksum::payment_intent(
             &params.secret_key,
             params.channel,
             &params.order_number,
@@ -266,38 +266,38 @@ impl BayarcashMcp {
     async fn verify_callback(&self, #[tool(aggr)] params: VerifyCallbackParams) -> String {
         let result = match params.callback_type.as_str() {
             "transaction" => {
-                match serde_json::from_value::<bayarcash_sdk::TransactionCallbackData>(
+                match serde_json::from_value::<bayarcash::TransactionCallbackData>(
                     params.callback_data,
                 ) {
-                    Ok(data) => bayarcash_sdk::verification::verify_transaction(&data, &params.secret_key),
+                    Ok(data) => bayarcash::verification::verify_transaction(&data, &params.secret_key),
                     Err(e) => return format!("Failed to parse callback data: {}", e),
                 }
             }
             "pre_transaction" => {
-                match serde_json::from_value::<bayarcash_sdk::PreTransactionCallbackData>(
+                match serde_json::from_value::<bayarcash::PreTransactionCallbackData>(
                     params.callback_data,
                 ) {
                     Ok(data) => {
-                        bayarcash_sdk::verification::verify_pre_transaction(&data, &params.secret_key)
+                        bayarcash::verification::verify_pre_transaction(&data, &params.secret_key)
                     }
                     Err(e) => return format!("Failed to parse callback data: {}", e),
                 }
             }
             "return_url" => {
-                match serde_json::from_value::<bayarcash_sdk::ReturnUrlCallbackData>(
+                match serde_json::from_value::<bayarcash::ReturnUrlCallbackData>(
                     params.callback_data,
                 ) {
                     Ok(data) => {
-                        bayarcash_sdk::verification::verify_return_url(&data, &params.secret_key)
+                        bayarcash::verification::verify_return_url(&data, &params.secret_key)
                     }
                     Err(e) => return format!("Failed to parse callback data: {}", e),
                 }
             }
             "dd_approval" => {
-                match serde_json::from_value::<bayarcash_sdk::DirectDebitBankApprovalCallbackData>(
+                match serde_json::from_value::<bayarcash::DirectDebitBankApprovalCallbackData>(
                     params.callback_data,
                 ) {
-                    Ok(data) => bayarcash_sdk::verification::verify_direct_debit_bank_approval(
+                    Ok(data) => bayarcash::verification::verify_direct_debit_bank_approval(
                         &data,
                         &params.secret_key,
                     ),
@@ -305,10 +305,10 @@ impl BayarcashMcp {
                 }
             }
             "dd_authorization" => {
-                match serde_json::from_value::<bayarcash_sdk::DirectDebitAuthorizationCallbackData>(
+                match serde_json::from_value::<bayarcash::DirectDebitAuthorizationCallbackData>(
                     params.callback_data,
                 ) {
-                    Ok(data) => bayarcash_sdk::verification::verify_direct_debit_authorization(
+                    Ok(data) => bayarcash::verification::verify_direct_debit_authorization(
                         &data,
                         &params.secret_key,
                     ),
@@ -316,10 +316,10 @@ impl BayarcashMcp {
                 }
             }
             "dd_transaction" => {
-                match serde_json::from_value::<bayarcash_sdk::DirectDebitTransactionCallbackData>(
+                match serde_json::from_value::<bayarcash::DirectDebitTransactionCallbackData>(
                     params.callback_data,
                 ) {
-                    Ok(data) => bayarcash_sdk::verification::verify_direct_debit_transaction(
+                    Ok(data) => bayarcash::verification::verify_direct_debit_transaction(
                         &data,
                         &params.secret_key,
                     ),

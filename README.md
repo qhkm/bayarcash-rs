@@ -1,29 +1,29 @@
-# bayarcash-sdk
+# bayarcash-rs
 
 Rust SDK for Bayarcash Payment Gateway API.
 
-[![Crates.io](https://img.shields.io/crates/v/bayarcash-sdk)](https://crates.io/crates/bayarcash-sdk)
-[![Docs.rs](https://docs.rs/bayarcash-sdk/badge.svg)](https://docs.rs/bayarcash-sdk)
+[![Crates.io](https://img.shields.io/crates/v/bayarcash-rs)](https://crates.io/crates/bayarcash-rs)
+[![Docs.rs](https://docs.rs/bayarcash-rs/badge.svg)](https://docs.rs/bayarcash-rs)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Installation
 
 ```toml
 [dependencies]
-bayarcash-sdk = "0.1"
+bayarcash-rs = "0.2"
 tokio = { version = "1", features = ["full"] }
 ```
 
 Or with `cargo add`:
 
 ```sh
-cargo add bayarcash-sdk
+cargo add bayarcash-rs
 ```
 
 ## Quick Start
 
 ```rust
-use bayarcash_sdk::{Bayarcash, ApiVersion, PaymentChannel, PaymentIntentRequest};
+use bayarcash::{Bayarcash, ApiVersion, PaymentChannel, PaymentIntentRequest};
 use std::time::Duration;
 
 #[tokio::main]
@@ -152,7 +152,7 @@ client.update_manual_bank_transfer_status("ref_no", "paid", "100.00").await?;
 ### Checksum Generation
 
 ```rust
-use bayarcash_sdk::checksum;
+use bayarcash::checksum;
 
 let cs = checksum::payment_intent(
     "secret_key",
@@ -167,19 +167,19 @@ let cs = checksum::payment_intent(
 ### Callback Verification
 
 ```rust
-use bayarcash_sdk::verification;
+use bayarcash::verification;
 
 let is_valid = verification::verify_callback("secret_key", &callback_data);
 ```
 
-For full API documentation, see [docs.rs/bayarcash-sdk](https://docs.rs/bayarcash-sdk).
+For full API documentation, see [docs.rs/bayarcash-rs](https://docs.rs/bayarcash-rs).
 
 ## CLI Usage
 
 Install the CLI and MCP server:
 
 ```sh
-cargo install bayarcash-sdk
+cargo install bayarcash-rs
 ```
 
 This installs two binaries: `bayarcash` (CLI) and `bayarcash-mcp` (MCP server).

@@ -1,4 +1,4 @@
-use bayarcash_sdk::{AppConfig, PaymentIntentRequest, TransactionQueryParams};
+use bayarcash::{AppConfig, PaymentIntentRequest, TransactionQueryParams};
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -432,7 +432,7 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
                 name,
                 email,
             } => {
-                let cs = bayarcash_sdk::checksum::payment_intent(
+                let cs = bayarcash::checksum::payment_intent(
                     &secret, channel, &order, amount, &name, &email,
                 );
                 println!("{}", serde_json::json!({"checksum": cs}));
@@ -450,7 +450,7 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
                 reason,
                 frequency,
             } => {
-                let cs = bayarcash_sdk::checksum::fpx_direct_debit_enrollment(
+                let cs = bayarcash::checksum::fpx_direct_debit_enrollment(
                     &secret, &order, amount, &name, &email, &phone, &id_type, &id_value, &reason,
                     &frequency,
                 );
@@ -465,7 +465,7 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
                 reason,
                 frequency,
             } => {
-                let cs = bayarcash_sdk::checksum::fpx_direct_debit_maintenance(
+                let cs = bayarcash::checksum::fpx_direct_debit_maintenance(
                     &secret, amount, &email, &phone, &reason, &frequency,
                 );
                 println!("{}", serde_json::json!({"checksum": cs}));
@@ -476,52 +476,52 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
         Commands::Verify { command } => match command {
             VerifyCommands::Transaction { json, secret } => {
                 let input = read_json_input(json)?;
-                let data: bayarcash_sdk::TransactionCallbackData =
+                let data: bayarcash::TransactionCallbackData =
                     serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                let valid = bayarcash_sdk::verification::verify_transaction(&data, &secret);
+                let valid = bayarcash::verification::verify_transaction(&data, &secret);
                 println!("{}", serde_json::json!({"valid": valid}));
                 Ok(())
             }
             VerifyCommands::PreTransaction { json, secret } => {
                 let input = read_json_input(json)?;
-                let data: bayarcash_sdk::PreTransactionCallbackData =
+                let data: bayarcash::PreTransactionCallbackData =
                     serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                let valid = bayarcash_sdk::verification::verify_pre_transaction(&data, &secret);
+                let valid = bayarcash::verification::verify_pre_transaction(&data, &secret);
                 println!("{}", serde_json::json!({"valid": valid}));
                 Ok(())
             }
             VerifyCommands::ReturnUrl { json, secret } => {
                 let input = read_json_input(json)?;
-                let data: bayarcash_sdk::ReturnUrlCallbackData =
+                let data: bayarcash::ReturnUrlCallbackData =
                     serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                let valid = bayarcash_sdk::verification::verify_return_url(&data, &secret);
+                let valid = bayarcash::verification::verify_return_url(&data, &secret);
                 println!("{}", serde_json::json!({"valid": valid}));
                 Ok(())
             }
             VerifyCommands::DdApproval { json, secret } => {
                 let input = read_json_input(json)?;
-                let data: bayarcash_sdk::DirectDebitBankApprovalCallbackData =
+                let data: bayarcash::DirectDebitBankApprovalCallbackData =
                     serde_json::from_str(&input).map_err(|e| e.to_string())?;
                 let valid =
-                    bayarcash_sdk::verification::verify_direct_debit_bank_approval(&data, &secret);
+                    bayarcash::verification::verify_direct_debit_bank_approval(&data, &secret);
                 println!("{}", serde_json::json!({"valid": valid}));
                 Ok(())
             }
             VerifyCommands::DdAuthorization { json, secret } => {
                 let input = read_json_input(json)?;
-                let data: bayarcash_sdk::DirectDebitAuthorizationCallbackData =
+                let data: bayarcash::DirectDebitAuthorizationCallbackData =
                     serde_json::from_str(&input).map_err(|e| e.to_string())?;
                 let valid =
-                    bayarcash_sdk::verification::verify_direct_debit_authorization(&data, &secret);
+                    bayarcash::verification::verify_direct_debit_authorization(&data, &secret);
                 println!("{}", serde_json::json!({"valid": valid}));
                 Ok(())
             }
             VerifyCommands::DdTransaction { json, secret } => {
                 let input = read_json_input(json)?;
-                let data: bayarcash_sdk::DirectDebitTransactionCallbackData =
+                let data: bayarcash::DirectDebitTransactionCallbackData =
                     serde_json::from_str(&input).map_err(|e| e.to_string())?;
                 let valid =
-                    bayarcash_sdk::verification::verify_direct_debit_transaction(&data, &secret);
+                    bayarcash::verification::verify_direct_debit_transaction(&data, &secret);
                 println!("{}", serde_json::json!({"valid": valid}));
                 Ok(())
             }
