@@ -1,4 +1,4 @@
-use bayarcash_sdk::{Bayarcash, ApiVersion, PaymentIntentRequest, PaymentChannel, BayarcashError};
+use bayarcash_sdk::{ApiVersion, Bayarcash, BayarcashError, PaymentChannel, PaymentIntentRequest};
 use serde_json::json;
 
 #[tokio::test]
@@ -9,18 +9,21 @@ async fn test_create_payment_intent() {
         .mock("POST", "/payment-intents")
         .with_status(200)
         .with_header("content-type", "application/json")
-        .with_body(json!({
-            "id": "pi_123",
-            "payer_name": "John Doe",
-            "payer_email": "john@example.com",
-            "order_number": "ORDER123",
-            "amount": 100.50,
-            "url": "https://pay.bayar.cash/redirect",
-            "type": "payment_intent",
-            "status": "pending",
-            "currency": "MYR",
-            "attempts": []
-        }).to_string())
+        .with_body(
+            json!({
+                "id": "pi_123",
+                "payer_name": "John Doe",
+                "payer_email": "john@example.com",
+                "order_number": "ORDER123",
+                "amount": 100.50,
+                "url": "https://pay.bayar.cash/redirect",
+                "type": "payment_intent",
+                "status": "pending",
+                "currency": "MYR",
+                "attempts": []
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -94,10 +97,13 @@ async fn test_fpx_banks_list() {
         .mock("GET", "/banks")
         .with_status(200)
         .with_header("content-type", "application/json")
-        .with_body(json!([
-            {"id": "1", "name": "Maybank", "code": "MBB", "status": "active"},
-            {"id": "2", "name": "CIMB", "code": "CIMB", "status": "active"}
-        ]).to_string())
+        .with_body(
+            json!([
+                {"id": "1", "name": "Maybank", "code": "MBB", "status": "active"},
+                {"id": "2", "name": "CIMB", "code": "CIMB", "status": "active"}
+            ])
+            .to_string(),
+        )
         .create_async()
         .await;
 
@@ -120,13 +126,16 @@ async fn test_validation_error_422() {
         .mock("POST", "/payment-intents")
         .with_status(422)
         .with_header("content-type", "application/json")
-        .with_body(json!({
-            "message": "The given data was invalid.",
-            "errors": {
-                "amount": ["The amount must be greater than 0."],
-                "payer_email": ["The payer email field is required."]
-            }
-        }).to_string())
+        .with_body(
+            json!({
+                "message": "The given data was invalid.",
+                "errors": {
+                    "amount": ["The amount must be greater than 0."],
+                    "payer_email": ["The payer email field is required."]
+                }
+            })
+            .to_string(),
+        )
         .create_async()
         .await;
 

@@ -1,4 +1,4 @@
-use bayarcash_sdk::{Bayarcash, ApiVersion, PaymentChannel, PaymentIntentRequest};
+use bayarcash_sdk::{ApiVersion, Bayarcash, PaymentChannel, PaymentIntentRequest};
 use std::time::Duration;
 
 #[tokio::main]
