@@ -54,14 +54,16 @@ impl AppConfig {
     /// Get token or error
     pub fn require_token(&self) -> Result<&str, String> {
         self.token.as_deref().ok_or_else(|| {
-            "No API token. Set BAYARCASH_TOKEN env var or add to ~/.bayarcash/config.toml".to_string()
+            "No API token. Set BAYARCASH_TOKEN env var or add to ~/.bayarcash/config.toml"
+                .to_string()
         })
     }
 
     /// Get secret key or error
     pub fn require_secret_key(&self) -> Result<&str, String> {
         self.secret_key.as_deref().ok_or_else(|| {
-            "No secret key. Set BAYARCASH_SECRET_KEY env var or add to ~/.bayarcash/config.toml".to_string()
+            "No secret key. Set BAYARCASH_SECRET_KEY env var or add to ~/.bayarcash/config.toml"
+                .to_string()
         })
     }
 

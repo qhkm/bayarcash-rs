@@ -174,6 +174,98 @@ let is_valid = verification::verify_callback("secret_key", &callback_data);
 
 For full API documentation, see [docs.rs/bayarcash-sdk](https://docs.rs/bayarcash-sdk).
 
+## CLI Usage
+
+Install the CLI and MCP server:
+
+```sh
+cargo install bayarcash-sdk
+```
+
+This installs two binaries: `bayarcash` (CLI) and `bayarcash-mcp` (MCP server).
+
+### Configuration
+
+```sh
+# Create config file
+bayarcash init
+
+# Or set environment variables
+export BAYARCASH_TOKEN="your_api_token"
+export BAYARCASH_SECRET_KEY="your_secret_key"
+export BAYARCASH_SANDBOX=true
+export BAYARCASH_API_VERSION=v3
+```
+
+Config precedence: CLI flags > environment variables > `~/.bayarcash/config.toml`
+
+### Examples
+
+```sh
+# List FPX banks
+bayarcash banks list
+
+# Create a payment intent
+bayarcash payment create --channel 1 --order ORD-001 --amount 100.00 --name "John" --email "john@example.com"
+
+# Get a transaction
+bayarcash transaction get tx_123
+
+# Generate checksum
+bayarcash checksum payment --secret sk_test --channel 1 --order ORD-001 --amount 100 --name "John" --email "j@e.com"
+
+# Verify callback (JSON as argument)
+bayarcash verify transaction '{"id":"1","checksum":"abc..."}' --secret sk_test
+
+# Use sandbox environment
+bayarcash --sandbox banks list
+
+# Use API v3
+bayarcash --api-version v3 transaction list --status success
+```
+
+All commands output JSON to stdout. Errors go to stderr.
+
+## MCP Server (for AI Agents)
+
+The `bayarcash-mcp` binary exposes Bayarcash operations as MCP tools via stdio transport.
+
+### Claude Desktop Configuration
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "bayarcash": {
+      "command": "bayarcash-mcp",
+      "env": {
+        "BAYARCASH_TOKEN": "your_token",
+        "BAYARCASH_SECRET_KEY": "your_secret"
+      }
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `create_payment` | Create a payment intent |
+| `get_payment` | Get payment intent by ID (v3) |
+| `get_transaction` | Get transaction by ID |
+| `list_transactions` | List transactions with filters (v3) |
+| `list_banks` | List FPX banks |
+| `list_portals` | List portals |
+| `get_channels` | Get portal payment channels |
+| `generate_checksum` | Generate HMAC-SHA256 checksum |
+| `verify_callback` | Verify callback signature |
+| `create_mandate` | Create DD enrollment |
+| `update_mandate` | Update DD mandate |
+| `get_mandate` | Get mandate details |
+| `get_mandate_transaction` | Get mandate transaction |
+
 ## License
 
 MIT - see [LICENSE](LICENSE).

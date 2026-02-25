@@ -1,6 +1,4 @@
-use bayarcash_sdk::{
-    AppConfig, PaymentIntentRequest, TransactionQueryParams,
-};
+use bayarcash_sdk::{AppConfig, PaymentIntentRequest, TransactionQueryParams};
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -268,7 +266,9 @@ fn read_json_input(arg: Option<String>) -> Result<String, String> {
     } else {
         use std::io::Read;
         let mut buf = String::new();
-        std::io::stdin().read_to_string(&mut buf).map_err(|e| e.to_string())?;
+        std::io::stdin()
+            .read_to_string(&mut buf)
+            .map_err(|e| e.to_string())?;
         Ok(buf)
     }
 }
@@ -311,14 +311,25 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
             }
             let template = "token = \"your_api_token_here\"\nsecret_key = \"your_secret_key_here\"\nsandbox = false\napi_version = \"v2\"\n";
             std::fs::write(&path, template).map_err(|e| e.to_string())?;
-            println!("{}", serde_json::json!({"status": "ok", "path": path.display().to_string()}));
+            println!(
+                "{}",
+                serde_json::json!({"status": "ok", "path": path.display().to_string()})
+            );
             Ok(())
         }
 
         Commands::Payment { command } => {
             let client = config.build_client().map_err(|e| e.to_string())?;
             match command {
-                PaymentCommands::Create { channel, order, amount, name, email, phone, currency } => {
+                PaymentCommands::Create {
+                    channel,
+                    order,
+                    amount,
+                    name,
+                    email,
+                    phone,
+                    currency,
+                } => {
                     let req = PaymentIntentRequest {
                         payment_channel: channel,
                         order_number: order,
@@ -332,12 +343,18 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
                         metadata: None,
                         checksum: None,
                     };
-                    let result = client.create_payment_intent(&req).await.map_err(|e| e.to_string())?;
+                    let result = client
+                        .create_payment_intent(&req)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
                 PaymentCommands::Get { id } => {
-                    let result = client.get_payment_intent(&id).await.map_err(|e| e.to_string())?;
+                    let result = client
+                        .get_payment_intent(&id)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
@@ -348,11 +365,20 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
             let client = config.build_client().map_err(|e| e.to_string())?;
             match command {
                 TransactionCommands::Get { id } => {
-                    let result = client.get_transaction(&id).await.map_err(|e| e.to_string())?;
+                    let result = client
+                        .get_transaction(&id)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
-                TransactionCommands::List { order, status, channel, email, reference } => {
+                TransactionCommands::List {
+                    order,
+                    status,
+                    channel,
+                    email,
+                    reference,
+                } => {
                     let params = TransactionQueryParams {
                         order_number: order,
                         status,
@@ -360,7 +386,10 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
                         payer_email: email,
                         exchange_reference_number: reference,
                     };
-                    let result = client.get_all_transactions(&params).await.map_err(|e| e.to_string())?;
+                    let result = client
+                        .get_all_transactions(&params)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
@@ -394,101 +423,156 @@ async fn run(command: Commands, config: AppConfig) -> Result<(), String> {
             }
         }
 
-        Commands::Checksum { command } => {
-            match command {
-                ChecksumCommands::Payment { secret, channel, order, amount, name, email } => {
-                    let cs = bayarcash_sdk::checksum::payment_intent(&secret, channel, &order, amount, &name, &email);
-                    println!("{}", serde_json::json!({"checksum": cs}));
-                    Ok(())
-                }
-                ChecksumCommands::Enrollment { secret, order, amount, name, email, phone, id_type, id_value, reason, frequency } => {
-                    let cs = bayarcash_sdk::checksum::fpx_direct_debit_enrollment(&secret, &order, amount, &name, &email, &phone, &id_type, &id_value, &reason, &frequency);
-                    println!("{}", serde_json::json!({"checksum": cs}));
-                    Ok(())
-                }
-                ChecksumCommands::Maintenance { secret, amount, email, phone, reason, frequency } => {
-                    let cs = bayarcash_sdk::checksum::fpx_direct_debit_maintenance(&secret, amount, &email, &phone, &reason, &frequency);
-                    println!("{}", serde_json::json!({"checksum": cs}));
-                    Ok(())
-                }
+        Commands::Checksum { command } => match command {
+            ChecksumCommands::Payment {
+                secret,
+                channel,
+                order,
+                amount,
+                name,
+                email,
+            } => {
+                let cs = bayarcash_sdk::checksum::payment_intent(
+                    &secret, channel, &order, amount, &name, &email,
+                );
+                println!("{}", serde_json::json!({"checksum": cs}));
+                Ok(())
             }
-        }
+            ChecksumCommands::Enrollment {
+                secret,
+                order,
+                amount,
+                name,
+                email,
+                phone,
+                id_type,
+                id_value,
+                reason,
+                frequency,
+            } => {
+                let cs = bayarcash_sdk::checksum::fpx_direct_debit_enrollment(
+                    &secret, &order, amount, &name, &email, &phone, &id_type, &id_value, &reason,
+                    &frequency,
+                );
+                println!("{}", serde_json::json!({"checksum": cs}));
+                Ok(())
+            }
+            ChecksumCommands::Maintenance {
+                secret,
+                amount,
+                email,
+                phone,
+                reason,
+                frequency,
+            } => {
+                let cs = bayarcash_sdk::checksum::fpx_direct_debit_maintenance(
+                    &secret, amount, &email, &phone, &reason, &frequency,
+                );
+                println!("{}", serde_json::json!({"checksum": cs}));
+                Ok(())
+            }
+        },
 
-        Commands::Verify { command } => {
-            match command {
-                VerifyCommands::Transaction { json, secret } => {
-                    let input = read_json_input(json)?;
-                    let data: bayarcash_sdk::TransactionCallbackData = serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                    let valid = bayarcash_sdk::verification::verify_transaction(&data, &secret);
-                    println!("{}", serde_json::json!({"valid": valid}));
-                    Ok(())
-                }
-                VerifyCommands::PreTransaction { json, secret } => {
-                    let input = read_json_input(json)?;
-                    let data: bayarcash_sdk::PreTransactionCallbackData = serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                    let valid = bayarcash_sdk::verification::verify_pre_transaction(&data, &secret);
-                    println!("{}", serde_json::json!({"valid": valid}));
-                    Ok(())
-                }
-                VerifyCommands::ReturnUrl { json, secret } => {
-                    let input = read_json_input(json)?;
-                    let data: bayarcash_sdk::ReturnUrlCallbackData = serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                    let valid = bayarcash_sdk::verification::verify_return_url(&data, &secret);
-                    println!("{}", serde_json::json!({"valid": valid}));
-                    Ok(())
-                }
-                VerifyCommands::DdApproval { json, secret } => {
-                    let input = read_json_input(json)?;
-                    let data: bayarcash_sdk::DirectDebitBankApprovalCallbackData = serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                    let valid = bayarcash_sdk::verification::verify_direct_debit_bank_approval(&data, &secret);
-                    println!("{}", serde_json::json!({"valid": valid}));
-                    Ok(())
-                }
-                VerifyCommands::DdAuthorization { json, secret } => {
-                    let input = read_json_input(json)?;
-                    let data: bayarcash_sdk::DirectDebitAuthorizationCallbackData = serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                    let valid = bayarcash_sdk::verification::verify_direct_debit_authorization(&data, &secret);
-                    println!("{}", serde_json::json!({"valid": valid}));
-                    Ok(())
-                }
-                VerifyCommands::DdTransaction { json, secret } => {
-                    let input = read_json_input(json)?;
-                    let data: bayarcash_sdk::DirectDebitTransactionCallbackData = serde_json::from_str(&input).map_err(|e| e.to_string())?;
-                    let valid = bayarcash_sdk::verification::verify_direct_debit_transaction(&data, &secret);
-                    println!("{}", serde_json::json!({"valid": valid}));
-                    Ok(())
-                }
+        Commands::Verify { command } => match command {
+            VerifyCommands::Transaction { json, secret } => {
+                let input = read_json_input(json)?;
+                let data: bayarcash_sdk::TransactionCallbackData =
+                    serde_json::from_str(&input).map_err(|e| e.to_string())?;
+                let valid = bayarcash_sdk::verification::verify_transaction(&data, &secret);
+                println!("{}", serde_json::json!({"valid": valid}));
+                Ok(())
             }
-        }
+            VerifyCommands::PreTransaction { json, secret } => {
+                let input = read_json_input(json)?;
+                let data: bayarcash_sdk::PreTransactionCallbackData =
+                    serde_json::from_str(&input).map_err(|e| e.to_string())?;
+                let valid = bayarcash_sdk::verification::verify_pre_transaction(&data, &secret);
+                println!("{}", serde_json::json!({"valid": valid}));
+                Ok(())
+            }
+            VerifyCommands::ReturnUrl { json, secret } => {
+                let input = read_json_input(json)?;
+                let data: bayarcash_sdk::ReturnUrlCallbackData =
+                    serde_json::from_str(&input).map_err(|e| e.to_string())?;
+                let valid = bayarcash_sdk::verification::verify_return_url(&data, &secret);
+                println!("{}", serde_json::json!({"valid": valid}));
+                Ok(())
+            }
+            VerifyCommands::DdApproval { json, secret } => {
+                let input = read_json_input(json)?;
+                let data: bayarcash_sdk::DirectDebitBankApprovalCallbackData =
+                    serde_json::from_str(&input).map_err(|e| e.to_string())?;
+                let valid =
+                    bayarcash_sdk::verification::verify_direct_debit_bank_approval(&data, &secret);
+                println!("{}", serde_json::json!({"valid": valid}));
+                Ok(())
+            }
+            VerifyCommands::DdAuthorization { json, secret } => {
+                let input = read_json_input(json)?;
+                let data: bayarcash_sdk::DirectDebitAuthorizationCallbackData =
+                    serde_json::from_str(&input).map_err(|e| e.to_string())?;
+                let valid =
+                    bayarcash_sdk::verification::verify_direct_debit_authorization(&data, &secret);
+                println!("{}", serde_json::json!({"valid": valid}));
+                Ok(())
+            }
+            VerifyCommands::DdTransaction { json, secret } => {
+                let input = read_json_input(json)?;
+                let data: bayarcash_sdk::DirectDebitTransactionCallbackData =
+                    serde_json::from_str(&input).map_err(|e| e.to_string())?;
+                let valid =
+                    bayarcash_sdk::verification::verify_direct_debit_transaction(&data, &secret);
+                println!("{}", serde_json::json!({"valid": valid}));
+                Ok(())
+            }
+        },
 
         Commands::Mandate { command } => {
             let client = config.build_client().map_err(|e| e.to_string())?;
             match command {
                 MandateCommands::Create { json } => {
-                    let data: serde_json::Value = serde_json::from_str(&json).map_err(|e| e.to_string())?;
-                    let result = client.create_fpx_direct_debit_enrollment(&data).await.map_err(|e| e.to_string())?;
+                    let data: serde_json::Value =
+                        serde_json::from_str(&json).map_err(|e| e.to_string())?;
+                    let result = client
+                        .create_fpx_direct_debit_enrollment(&data)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
                 MandateCommands::Update { id, json } => {
-                    let data: serde_json::Value = serde_json::from_str(&json).map_err(|e| e.to_string())?;
-                    let result = client.create_fpx_direct_debit_maintenance(&id, &data).await.map_err(|e| e.to_string())?;
+                    let data: serde_json::Value =
+                        serde_json::from_str(&json).map_err(|e| e.to_string())?;
+                    let result = client
+                        .create_fpx_direct_debit_maintenance(&id, &data)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
                 MandateCommands::Terminate { id, json } => {
-                    let data: serde_json::Value = serde_json::from_str(&json).map_err(|e| e.to_string())?;
-                    let result = client.create_fpx_direct_debit_termination(&id, &data).await.map_err(|e| e.to_string())?;
+                    let data: serde_json::Value =
+                        serde_json::from_str(&json).map_err(|e| e.to_string())?;
+                    let result = client
+                        .create_fpx_direct_debit_termination(&id, &data)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
                 MandateCommands::Get { id } => {
-                    let result = client.get_fpx_direct_debit(&id).await.map_err(|e| e.to_string())?;
+                    let result = client
+                        .get_fpx_direct_debit(&id)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }
                 MandateCommands::Transaction { id } => {
-                    let result = client.get_fpx_direct_debit_transaction(&id).await.map_err(|e| e.to_string())?;
+                    let result = client
+                        .get_fpx_direct_debit_transaction(&id)
+                        .await
+                        .map_err(|e| e.to_string())?;
                     print_json(&result);
                     Ok(())
                 }

@@ -1,16 +1,14 @@
-use bayarcash_sdk::{
-    AppConfig, PaymentIntentRequest, TransactionQueryParams,
-};
+use bayarcash_sdk::{AppConfig, PaymentIntentRequest, TransactionQueryParams};
 use rmcp::{
-    ServerHandler, ServiceExt,
     model::{Implementation, ServerCapabilities, ServerInfo},
-    tool,
+    tool, ServerHandler, ServiceExt,
 };
 use schemars::JsonSchema;
 use serde::Deserialize;
 
 #[derive(Debug, Clone)]
 struct BayarcashMcp {
+    #[allow(dead_code)]
     config: AppConfig,
 }
 
@@ -21,7 +19,8 @@ impl BayarcashMcp {
 }
 
 // === Tool parameter structs ===
-
+// These structs are consumed by the #[tool(aggr)] macro; allow dead_code for all of them.
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct CreatePaymentParams {
     /// Payment channel (1=FPX, 2=Manual, 3=DD, 5=DuitNow DOBW, 6=DuitNow QR, 12=Credit Card)
@@ -40,12 +39,14 @@ struct CreatePaymentParams {
     currency: Option<String>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct IdParam {
     /// Resource ID
     id: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct ListTransactionsParams {
     /// Filter by order number
@@ -60,12 +61,14 @@ struct ListTransactionsParams {
     exchange_reference_number: Option<String>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct PortalKeyParam {
     /// Portal key
     portal_key: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct ChecksumPaymentParams {
     /// Secret key for HMAC
@@ -82,6 +85,7 @@ struct ChecksumPaymentParams {
     payer_email: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct VerifyCallbackParams {
     /// Secret key for verification
@@ -92,12 +96,14 @@ struct VerifyCallbackParams {
     callback_data: serde_json::Value,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct MandateCreateParams {
     /// Enrollment data as JSON object
     data: serde_json::Value,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, JsonSchema)]
 struct MandateUpdateParams {
     /// Mandate ID
@@ -109,11 +115,10 @@ struct MandateUpdateParams {
 #[tool(tool_box)]
 impl BayarcashMcp {
     /// Create a payment intent
-    #[tool(description = "Create a Bayarcash payment intent. Returns the payment URL and intent details.")]
-    async fn create_payment(
-        &self,
-        #[tool(aggr)] params: CreatePaymentParams,
-    ) -> String {
+    #[tool(
+        description = "Create a Bayarcash payment intent. Returns the payment URL and intent details."
+    )]
+    async fn create_payment(&self, #[tool(aggr)] params: CreatePaymentParams) -> String {
         let client = match self.config.build_client() {
             Ok(c) => c,
             Err(e) => return format!("Error building client: {}", e),
@@ -171,7 +176,9 @@ impl BayarcashMcp {
     }
 
     /// List transactions with optional filters
-    #[tool(description = "List transactions with optional filters (order_number, status, payment_channel, payer_email, exchange_reference_number). Requires v3 API.")]
+    #[tool(
+        description = "List transactions with optional filters (order_number, status, payment_channel, payer_email, exchange_reference_number). Requires v3 API."
+    )]
     async fn list_transactions(&self, #[tool(aggr)] params: ListTransactionsParams) -> String {
         let client = match self.config.build_client() {
             Ok(c) => c,
@@ -253,7 +260,9 @@ impl BayarcashMcp {
     }
 
     /// Verify callback signature
-    #[tool(description = "Verify a Bayarcash callback signature. callback_type must be one of: transaction, pre_transaction, return_url, dd_approval, dd_authorization, dd_transaction")]
+    #[tool(
+        description = "Verify a Bayarcash callback signature. callback_type must be one of: transaction, pre_transaction, return_url, dd_approval, dd_authorization, dd_transaction"
+    )]
     async fn verify_callback(&self, #[tool(aggr)] params: VerifyCallbackParams) -> String {
         let result = match params.callback_type.as_str() {
             "transaction" => {
@@ -328,7 +337,9 @@ impl BayarcashMcp {
     }
 
     /// Create an FPX Direct Debit enrollment (mandate)
-    #[tool(description = "Create an FPX Direct Debit enrollment mandate. Pass enrollment data as a JSON object.")]
+    #[tool(
+        description = "Create an FPX Direct Debit enrollment mandate. Pass enrollment data as a JSON object."
+    )]
     async fn create_mandate(&self, #[tool(aggr)] params: MandateCreateParams) -> String {
         let client = match self.config.build_client() {
             Ok(c) => c,
