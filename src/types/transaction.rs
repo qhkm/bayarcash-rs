@@ -3,7 +3,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 
 /// Transaction response from API
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Transaction {
     pub id: Option<String>,
     pub updated_at: Option<String>,
@@ -45,7 +45,7 @@ pub struct TransactionQueryParams {
 }
 
 /// Pagination metadata
-#[derive(Debug, Clone, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PaginationMeta {
     pub current_page: Option<u32>,
     pub from: Option<u32>,
@@ -58,7 +58,7 @@ pub struct PaginationMeta {
 }
 
 /// Paginated transaction response
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PaginatedResponse<T> {
     pub data: Vec<T>,
     #[serde(default)]

@@ -35,7 +35,7 @@ pub struct FpxDirectDebitMaintenanceRequest {
 }
 
 /// FPX Direct Debit application response
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FpxDirectDebitApplication {
     pub id: String,
     pub url: String,
@@ -45,7 +45,7 @@ pub struct FpxDirectDebitApplication {
 }
 
 /// FPX Direct Debit details response
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FpxDirectDebit {
     pub id: String,
     pub mandate_reference_number: Option<String>,

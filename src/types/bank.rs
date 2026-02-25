@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// FPX bank info
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FpxBank {
     pub id: String,
     pub name: String,

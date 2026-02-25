@@ -52,7 +52,7 @@ pub struct PaymentIntentRequest {
 }
 
 /// Response from payment intent creation or retrieval
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PaymentIntent {
     pub id: String,
     pub payer_name: String,

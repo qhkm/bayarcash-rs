@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Portal info
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Portal {
     pub id: String,
     pub portal_key: String,
@@ -11,7 +11,7 @@ pub struct Portal {
 }
 
 /// Payment channel details within a portal
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PaymentChannelInfo {
     pub id: u8,
     pub name: String,
